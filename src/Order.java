@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ProductDB {
+public class Order {
 
 	public static ArrayList<OrderPQ> get_Order(){
 		ArrayList<Product> Cat = new ArrayList<Product>();
