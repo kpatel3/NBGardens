@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 import java.awt.Font;
@@ -18,15 +19,22 @@ import javax.swing.JTable;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
+
 
 public class UI{ // extends JFrame{
 
 	
 	private JFrame mainFrame;
+	public static String addStock = "1"; 
+	public static int addQuantity = 0;
 	public static String orderStatus = "NULL";
 	public static int watch_int = -1;
 	private JTable orderTable;
 	private JTable ordersTable;
+	private JTable inventoryTable;
+	private JTextField invQuantityInput;
 	
 	
 	public UI(){prepareGUI();}
@@ -45,6 +53,18 @@ public class UI{ // extends JFrame{
 		final JPanel ViewOrderList = new JPanel();
 		mainFrame.getContentPane().add(ViewOrderList, "name_579464982833263");
 		ViewOrderList.setLayout(null);
+		
+		final JPanel ViewOrder = new JPanel();
+		mainFrame.getContentPane().add(ViewOrder, "name_579464994199815");
+		ViewOrder.setLayout(null);
+		
+		JPanel Inventory = new JPanel();
+		mainFrame.getContentPane().add(Inventory, "name_11057225177614");
+		Inventory.setLayout(null);
+		
+		JPanel AddStock = new JPanel();
+		mainFrame.getContentPane().add(AddStock, "name_18323162741461");
+		AddStock.setLayout(null);
 		
 		JButton ViewOrderButton = new JButton("View Order");
 		ViewOrderButton.setBounds(411, 75, 190, 58);
@@ -87,6 +107,33 @@ public class UI{ // extends JFrame{
 		});
 		UpdateStatusButton.setBounds(411, 144, 190, 58);
 		ViewOrderList.add(UpdateStatusButton);
+		
+		JButton InventoryButton = new JButton("Inventory");
+		InventoryButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ViewOrder.setVisible(false);
+				ViewOrderList.setVisible(false);
+				Inventory.setVisible(true);
+				
+			}
+		});
+		InventoryButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		InventoryButton.setBounds(411, 366, 190, 58);
+		ViewOrderList.add(InventoryButton);
+		
+		JButton AddInventoryButton = new JButton("Add Inventory");
+		AddInventoryButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ViewOrder.setVisible(false);
+				ViewOrderList.setVisible(false);
+				Inventory.setVisible(false);
+				AddStock.setVisible(true);
+			}
+		});
+		AddInventoryButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		AddInventoryButton.setBounds(411, 297, 190, 58);
+		ViewOrderList.add(AddInventoryButton);
+		
 		ordersTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -104,9 +151,7 @@ public class UI{ // extends JFrame{
 		//Put information about order IDs and Status' in Table
 		updateOrdersTable();	
 		
-		final JPanel ViewOrder = new JPanel();
-		mainFrame.getContentPane().add(ViewOrder, "name_579464994199815");
-		ViewOrder.setLayout(null);
+	
 		
 		JLabel OrderLabel2 = new JLabel("Order:");
 		OrderLabel2.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -142,6 +187,121 @@ public class UI{ // extends JFrame{
 		orderTable = new JTable();
 		scrollPaneOrder.setViewportView(orderTable);
 		
+		
+		JLabel InventoryLabel = new JLabel("Inventory");
+		InventoryLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		InventoryLabel.setBounds(63, 42, 124, 22);
+		Inventory.add(InventoryLabel);
+		
+		JScrollPane InventoryScroll = new JScrollPane();
+		InventoryScroll.setBounds(35, 82, 564, 349);
+		Inventory.add(InventoryScroll);
+		
+		inventoryTable = new JTable();
+		InventoryScroll.setViewportView(inventoryTable);
+		
+		JButton InventoryBack = new JButton("Back");
+		InventoryBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ViewOrder.setVisible(false);
+				ViewOrderList.setVisible(true);
+				Inventory.setVisible(false);
+			}
+		});
+		InventoryBack.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		InventoryBack.setBounds(409, 11, 190, 58);
+		Inventory.add(InventoryBack);
+		
+
+		
+		JLabel invIDLabel = new JLabel("ID");
+		invIDLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		invIDLabel.setBounds(63, 143, 46, 25);
+		AddStock.add(invIDLabel);
+		
+		JLabel invNameLabel = new JLabel("Name");
+		invNameLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		invNameLabel.setBounds(63, 194, 46, 25);
+		AddStock.add(invNameLabel);
+		
+		JComboBox invNameCombo = new JComboBox(Product.get_Product_Name());
+		invNameCombo.setBounds(159, 196, 150, 25);
+		
+		JComboBox invIDCombo = new JComboBox(Product.get_Product_ID());
+		invIDCombo.setBounds(159, 145, 150, 25);
+		
+		invNameCombo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int friendly = invNameCombo.getSelectedIndex();
+				invIDCombo.setSelectedIndex(friendly);
+				addStock = (String) invIDCombo.getSelectedItem();			
+			}
+		});
+		
+		AddStock.add(invNameCombo);
+		
+		
+		invIDCombo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int friendly = invIDCombo.getSelectedIndex();
+				invNameCombo.setSelectedIndex(friendly);
+				addStock = (String) invIDCombo.getSelectedItem();
+				System.out.println(addStock);
+			}
+		});
+		
+		AddStock.add(invIDCombo);
+		
+		
+		JLabel invQuantityAddedLabel = new JLabel("Quantity Added");
+		invQuantityAddedLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		invQuantityAddedLabel.setBounds(63, 250, 135, 32);
+		AddStock.add(invQuantityAddedLabel);
+		
+		
+		
+		invQuantityInput = new JTextField();
+		invQuantityInput.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		invQuantityInput.setBounds(223, 254, 86, 25);
+		AddStock.add(invQuantityInput);
+		invQuantityInput.setColumns(10);
+		
+		JLabel lblAddInventory = new JLabel("Add Inventory");
+		lblAddInventory.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblAddInventory.setBounds(63, 42, 166, 20);
+		AddStock.add(lblAddInventory);
+		
+		JButton invAddButton = new JButton("Add");
+		invAddButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					addQuantity = Integer.parseInt(invQuantityInput.getText());
+					Product.Update_Stock(addStock, addQuantity);
+				} catch (NumberFormatException e1) {
+					JOptionPane.showMessageDialog(null, "Please Input Valid Number \n (1-1000)", "Invalid Input", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+			}
+		});
+		invAddButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		invAddButton.setBounds(376, 361, 190, 58);
+		AddStock.add(invAddButton);
+		
+		JButton invBackButton = new JButton("Back");
+		invBackButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ViewOrder.setVisible(false);
+				ViewOrderList.setVisible(true);
+				Inventory.setVisible(false);
+				AddStock.setVisible(false);
+			}
+		});
+		invBackButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		invBackButton.setBounds(409, 11, 190, 58);
+		AddStock.add(invBackButton);
+		updateInventoryTable();
+		
+		
 		ViewOrderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ViewOrderList.setVisible(false);
@@ -159,6 +319,10 @@ public class UI{ // extends JFrame{
 				System.exit(0);
 			}
 		});
+		mainFrame.setVisible(true);
+	}
+	
+	private void showEvent() {
 		mainFrame.setVisible(true);
 	}
 	
@@ -183,10 +347,6 @@ public class UI{ // extends JFrame{
 		}
 	}
 	
-	private void showEvent() {
-		mainFrame.setVisible(true);
-	}
-	
 	private void updateOrdersTable(){
 		String[] columnNames = {"Order ID", "Status"};
 		
@@ -200,9 +360,34 @@ public class UI{ // extends JFrame{
 			info[i][1] = status[i];
 		}
 		
-		DefaultTableModel models = new DefaultTableModel(info, columnNames);
+		DefaultTableModel model = new DefaultTableModel(info, columnNames);
 		
-		ordersTable.setModel(models);
+		ordersTable.setModel(model);
 	}
+	
+	private void updateInventoryTable(){
+		String[] columnNames = {"Product ID", "Name", "Location", "Stock", "Porousware" };
+		
+		String[] product_ID = Product.get_Product_ID();
+		String[] product_Name = Product.get_Product_Name();
+		String[] product_Location = Product.get_Product_Location();
+		String[] product_Stock = Product.get_Product_Stock();
+		String[] product_Porous = Product.get_Product_Porous();		
+		
+		String[][] info = new String[MySQL.get_DataSize()][5];
+		
+		for (int i=0; i < MySQL.get_DataSize(); i++){
+			info[i][0] = product_ID[i];
+			info[i][1] = product_Name[i];
+			info[i][2] = product_Location[i];
+			info[i][3] = product_Stock[i];
+			info[i][4] = product_Porous[i];
+		}
+		
+		DefaultTableModel model = new DefaultTableModel(info, columnNames);
+		
+		inventoryTable.setModel(model);
+	}
+	
 }
 

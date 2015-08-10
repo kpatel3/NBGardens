@@ -84,6 +84,11 @@ public class MySQL {
 					stmt.execute(sql4);
 
 					break;
+				case "Add":
+					String sql5 = "UPDATE " + table + " SET " + field + " = " + field + " + " + id + " WHERE " + field2 + "=" + Integer.parseInt(field3); 
+					stmt.execute(sql5);
+					
+					break;
 				default:
 					System.out.println("No operation... Invalid input");
 				}
