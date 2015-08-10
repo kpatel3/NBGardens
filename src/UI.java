@@ -8,10 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
-
 import java.awt.Font;
 import java.awt.CardLayout;
-
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -24,7 +22,7 @@ public class UI{ //extends JFrame{
 	
 	private JFrame mainFrame;
 	public static String watch = "NULL";
-	public static int watch_int = 0;
+	public static int watch_int = -1;
 	private JTable orderTable;
 	
 	
@@ -41,7 +39,7 @@ public class UI{ //extends JFrame{
 		mainFrame.setSize(651, 513);
 		mainFrame.getContentPane().setLayout(new CardLayout(0, 0));
 		
-		JPanel ViewOrderList = new JPanel();
+		final JPanel ViewOrderList = new JPanel();
 		mainFrame.getContentPane().add(ViewOrderList, "name_579464982833263");
 		ViewOrderList.setLayout(null);
 		
@@ -59,7 +57,7 @@ public class UI{ //extends JFrame{
 		
 		//Capture information from database to list orders
 		
-		JList<String> ViewOrders = new JList<String>(OrderList.get_Order_id()); //OrderList.Get_Order_ID()
+		final JList<String> ViewOrders = new JList<String>(OrderList.get_Order_id()); //OrderList.Get_Order_ID()
 		ViewOrders.setBounds(42, 75, 340, 349);
 		ViewOrderList.add(ViewOrders);
 		ViewOrders.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -74,7 +72,7 @@ public class UI{ //extends JFrame{
 				}
 		);
 		
-		JPanel ViewOrder = new JPanel();
+		final JPanel ViewOrder = new JPanel();
 		mainFrame.getContentPane().add(ViewOrder, "name_579464994199815");
 		ViewOrder.setLayout(null);
 		
@@ -83,7 +81,7 @@ public class UI{ //extends JFrame{
 		OrderLabel2.setBounds(63, 42, 52, 22);
 		ViewOrder.add(OrderLabel2);
 		
-		JLabel WatchLabel = new JLabel("");
+		final JLabel WatchLabel = new JLabel("");
 		WatchLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		WatchLabel.setBounds(117, 42, 81, 22);
 		
@@ -102,6 +100,12 @@ public class UI{ //extends JFrame{
 		
 		
 		JButton BackButton = new JButton("Back");
+		BackButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ViewOrder.setVisible(false);
+				ViewOrderList.setVisible(true);
+			}
+		});
 		BackButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		BackButton.setBounds(411, 366, 190, 58);
 		ViewOrder.add(BackButton);
@@ -112,6 +116,7 @@ public class UI{ //extends JFrame{
 				ViewOrder.setVisible(true);
 				if (watch != "NULL"){
 					WatchLabel.setText(watch);
+					updateOrderTable(watch_int);
 				}
 			}
 		});
@@ -126,29 +131,30 @@ public class UI{ //extends JFrame{
 	}
 	
 	private void updateOrderTable(int order){
-		
-		String[] columnNames= {"Product", "Location", "Status"};
-		String[][] info = {
-				{"yep", "anywhere", "WAITING"},
-				{"cool", "here", "WAITING"},
-				
-			};
-		DefaultTableModel model = new DefaultTableModel(info, columnNames);
-		orderTable.setModel(model);
-	}
+		if (order != -1){
+			String[] columnNames= {"Product", "Location", "Status"};
 	
+			String[] product_ID = Order.get_Order_ProductID(order);
+			String[] product_Name = Order.get_Order_ProductName(order);
+			String[] product_Location = Order.get_Order_ProductLocation(order);
+	
+			String[][] info = new String[MySQL.get_DataSize()][3];
+			
+			for (int i=0; i < MySQL.get_DataSize(); i++){
+				info[i][0] = product_ID[i];
+				info[i][1] = product_Name[i];
+				info[i][2] = product_Location[i];
+			}
+			
+			DefaultTableModel model = new DefaultTableModel(info, columnNames);
+			orderTable.setModel(model);
+		
+		}
+	}
 	private void showEvent() {
 		mainFrame.setVisible(true);
 	}
 	
-	static String[] Get_Database(String task, String table, String field){
-		MySQL.accessBD(task,table,field);
-		String[] transfer = new String[MySQL.read_Database().size()];
-		
-		for (int i = 0; i < MySQL.read_Database().size(); i++){
-			transfer[i] = MySQL.read_Database().get(i);	
-		}
-		return transfer;
-	}
+	
 }
 
