@@ -23,7 +23,7 @@ public class MySQL {
 		
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("Connecting to database...");
+			//System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			data.clear();
 			data2.clear();
@@ -32,7 +32,7 @@ public class MySQL {
 				switch(task){
 				case "READ":
 					//Read
-					System.out.println("Creating read statement...");
+					//System.out.println("Creating read statement...");
 					String sql1 = "SELECT " + field + " FROM " + table;
 					ResultSet rs = stmt.executeQuery(sql1);
 					while (rs.next()) {
@@ -43,18 +43,17 @@ public class MySQL {
 					break;
 				case "Search":
 					//Search for other fields
-					System.out.println("Creating search statement...");
+					//System.out.println("Creating search statement...");
 					String sql2 = "SELECT " + field + " FROM " + table + " WHERE " + field2 + "=" + id;
 					ResultSet rs2 = stmt.executeQuery(sql2);
 					while (rs2.next()){
 						String details = rs2.getString(field);
 						data.add(details);
-
 					}
 					rs2.close();
 					break;
 				case "Refine":
-					System.out.println("Creating refine statement...");
+					//System.out.println("Creating refine statement...");
 					String sql3 = "SELECT " + field + " FROM " + table + " WHERE " + field2 + "=" + id;
 					ResultSet rs3 = stmt.executeQuery(sql3);
 				
@@ -64,18 +63,26 @@ public class MySQL {
 
 					}
 					rs3.close();
-					String[] transfer = new String[data.size()];
-					ResultSet rs3_1 = null;
-					for (int i = 0; i < data.size(); i++){
-						transfer[i] = data.get(i);
-						String sql3_1 = "SELECT " + field3 + " FROM " + table2 + " WHERE " + field4 + "=" + transfer[i];
-						rs3_1 = stmt.executeQuery(sql3_1);
-						while(rs3_1.next()){
-							String details2 = rs3_1.getString(field3);
-							data2.add(details2);
+					
+					if (data.size() !=0){
+						String[] transfer = new String[data.size()];
+						ResultSet rs3_1 = null;
+						for (int i = 0; i < data.size(); i++){
+							transfer[i] = data.get(i);
+							String sql3_1 = "SELECT " + field3 + " FROM " + table2 + " WHERE " + field4 + "=" + transfer[i];
+							rs3_1 = stmt.executeQuery(sql3_1);
+							while(rs3_1.next()){
+								String details2 = rs3_1.getString(field3);
+								data2.add(details2);
+							}
 						}
+						rs3_1.close();	
 					}
-					rs3_1.close();	
+					break;
+				case "Update":
+					String sql4 = "UPDATE " + table + " SET " + field2 + "=" + field + " WHERE " +  field3 + "=" + id;
+					stmt.execute(sql4);
+
 					break;
 				default:
 					System.out.println("No operation... Invalid input");
@@ -95,7 +102,7 @@ public class MySQL {
 				se.printStackTrace();
 			}
 		}
-		System.out.println("Goodbye!");
+		//System.out.println("Goodbye!");
 	}
 	public static void main(String[]args){
 		accessBD("","","","","","","", 0);
@@ -106,7 +113,11 @@ public class MySQL {
 		return data.size();
 	}
 
-
+	
+	public static void Update_Status(int orderID, String toWhat){
+		accessBD("Update","`productdb`.`order`",toWhat,"`status`","`order_ID`","","",orderID);
+	}
+	
 	public static String[] Get_Database(String task, String table, String field){
 		accessBD(task,table,field, "","","","", 0);
 

@@ -10,7 +10,6 @@ public class Product {
 		Sharpie = MySQL.Get_Database("READ", "Products", "product_Name");
 		System.out.println(Sharpie[1]);
 		return Sharpie;
-		//		return MySQL.Get_Database("READ", "Products", "product_Name");
 	}
 	
 	public static String[] get_Product_Location(){
