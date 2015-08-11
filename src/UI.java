@@ -109,7 +109,7 @@ public class UI{ // extends JFrame{
 			}
 		});
 		
-		JButton AddInventoryButton = new JButton("Add Inventory");
+		JButton AddInventoryButton = new JButton("Add/Remove Stock");
 		AddInventoryButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ViewOrder.setVisible(false);
@@ -290,10 +290,10 @@ public class UI{ // extends JFrame{
 		AddStock.add(invNameLabel);
 		
 		JComboBox<?> invNameCombo = new JComboBox<Object>(Product.get_Product_Name());
-		invNameCombo.setBounds(159, 196, 150, 25);
+		invNameCombo.setBounds(206, 196, 150, 25);
 		
 		JComboBox<?> invIDCombo = new JComboBox<Object>(Product.get_Product_ID());
-		invIDCombo.setBounds(159, 145, 150, 25);
+		invIDCombo.setBounds(206, 145, 150, 25);
 		
 		invNameCombo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -318,16 +318,16 @@ public class UI{ // extends JFrame{
 		AddStock.add(invIDCombo);
 		
 		
-		JLabel invQuantityAddedLabel = new JLabel("Quantity Added");
+		JLabel invQuantityAddedLabel = new JLabel("Quantity Added/Removed");
 		invQuantityAddedLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		invQuantityAddedLabel.setBounds(63, 250, 135, 32);
+		invQuantityAddedLabel.setBounds(63, 250, 197, 32);
 		AddStock.add(invQuantityAddedLabel);
 		
 		
 		
 		invQuantityInput = new JTextField();
 		invQuantityInput.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		invQuantityInput.setBounds(223, 254, 86, 25);
+		invQuantityInput.setBounds(270, 254, 86, 25);
 		AddStock.add(invQuantityInput);
 		invQuantityInput.setColumns(10);
 		
@@ -349,7 +349,7 @@ public class UI{ // extends JFrame{
 			}
 		});
 		invAddButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		invAddButton.setBounds(376, 361, 190, 58);
+		invAddButton.setBounds(411, 125, 190, 58);
 		AddStock.add(invAddButton);
 		
 		JButton invBackButton = new JButton("Back");
@@ -362,8 +362,23 @@ public class UI{ // extends JFrame{
 			}
 		});
 		invBackButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		invBackButton.setBounds(409, 11, 190, 58);
+		invBackButton.setBounds(411, 366, 190, 58);
 		AddStock.add(invBackButton);
+		
+		JButton invRemoveButton = new JButton("Remove");
+		invRemoveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					addQuantity = Integer.parseInt("-"+invQuantityInput.getText());
+					Product.Update_Stock(addStock, addQuantity);
+				} catch (NumberFormatException e1) {
+					JOptionPane.showMessageDialog(null, "Please Input Valid Number \n (1-1000)", "Invalid Input", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		});
+		invRemoveButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		invRemoveButton.setBounds(411, 197, 190, 58);
+		AddStock.add(invRemoveButton);
 		
 		JScrollPane scrollPanePurchaseOrderList = new JScrollPane();
 		scrollPanePurchaseOrderList.setBounds(42, 75, 340, 349);
@@ -496,6 +511,26 @@ public class UI{ // extends JFrame{
 				info[i][3] = product_Quantity[i];
 			}
 			
+			
+			//Travelling Salesman
+			boolean flag = true;
+			String temp;
+			
+			while(flag){
+				flag = false;
+				for(int i=0; i< MySQL.get_DataSize() - 1; i++){
+					if (Integer.parseInt(info[i][2])>Integer.parseInt(info[i+1][2])){
+						for (int j = 0; j < 4; j++){
+							temp = info[i][j];
+							info[i][j] = info[i+1][j];
+							info[i+1][j] = temp;
+						}
+						flag = true;
+					}
+				}
+			}
+			
+			
 			DefaultTableModel model = new DefaultTableModel(info, columnNames);
 			orderTable.setModel(model);
 		}
@@ -541,6 +576,7 @@ public class UI{ // extends JFrame{
 			info[i][3] = product_Stock[i];
 			info[i][4] = product_Porous[i];
 		}
+			
 		
 		DefaultTableModel model = new DefaultTableModel(info, columnNames);
 		
@@ -569,7 +605,7 @@ public class UI{ // extends JFrame{
 		String[] product_Location = PurchaseOrder.get_PurchaseOrder_Product_Location(order);
 		String[] product_Porousware = PurchaseOrder.get_PurchaseOrder_Product_porousware(order);
 		String[] product_Quantity = PurchaseOrder.get_PurchaseOrder_Product_Quantity(order);
-		
+			
 		
 		String[][] info = new String[MySQL.get_DataSize()][5];
 		
@@ -580,7 +616,7 @@ public class UI{ // extends JFrame{
 			info[i][3] = product_Porousware[i];
 			info[i][4] = product_Quantity[i];
 		}
-		
+
 		DefaultTableModel model = new DefaultTableModel(info,columnNames);
 		purchaseOrderTable.setModel(model);
 	}
