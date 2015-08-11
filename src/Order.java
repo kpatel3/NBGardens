@@ -1,33 +1,23 @@
 public class Order {
 
 	public static String[] get_Order_ProductID(int order_ID){
-		MySQL.accessBD("Search", "orderlist", "productID", "orderID","","","", order_ID);
-		String[] transfer = new String[MySQL.data.size()];
-		
-		for (int i = 0; i < MySQL.data.size(); i++){
-			transfer[i] = MySQL.data.get(i);
-		}
-		return transfer;
+		MySQL.accessBD("Search", "SELECT productID FROM orderlist WHERE orderID = " + order_ID,"productID");
+		return MySQL.Transfer_Data();
 	}
 		
 	public static String[] get_Order_ProductName(int order_ID){
-		MySQL.accessBD("Refine", "orderlist", "productID", "orderID", "product_Name","product_ID", "products", order_ID);
-		String[] transfer = new String[MySQL.data2.size()];
-		
-		for (int i = 0; i < MySQL.data2.size(); i++){
-			transfer[i] = MySQL.data2.get(i);
-		}
-		return transfer;
+		MySQL.accessBD("Refine", "SELECT product_Name From Products INNER JOIN Orderlist ON Orderlist.productID = Products.product_ID WHERE Orderlist.orderID=" + order_ID,"product_Name");
+		return MySQL.Transfer_Data();
 	}
 
 	public static String[] get_Order_ProductLocation(int order_ID){
-		MySQL.accessBD("Refine", "orderlist", "productID", "orderID", "product_Location", "product_ID", "products", order_ID);
-		String[] transfer = new String[MySQL.data2.size()];
-		
-		for (int i = 0; i < MySQL.data2.size(); i++){
-			transfer[i] = MySQL.data2.get(i);
-		}
-		return transfer;
+		MySQL.accessBD("Refine", "SELECT product_Location From Products INNER JOIN Orderlist ON Orderlist.productID = Products.product_ID WHERE Orderlist.orderID=" + order_ID,"product_Location");
+		return MySQL.Transfer_Data();
+	}
+
+	public static String[] get_Order_Product_quantity(int order_ID){
+		MySQL.accessBD("Search", "SELECT quantity FROM orderlist WHERE orderID = " + order_ID,"quantity");
+		return MySQL.Transfer_Data();
 	}
 	
 }

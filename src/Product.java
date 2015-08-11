@@ -1,23 +1,29 @@
 public class Product {
 
 	public static String[] get_Product_ID(){
-		return MySQL.Get_Database("READ", "Products", "product_ID");	
+		MySQL.accessBD("READ", "SELECT `product_ID` FROM Products", "product_ID");
+		return MySQL.Transfer_Data();
+
 	}
 
 	public static String[] get_Product_Name(){
-		return MySQL.Get_Database("READ", "Products", "product_Name");	
+		MySQL.accessBD("READ", "SELECT `product_Name` FROM Products", "product_Name");
+		return MySQL.Transfer_Data();
 	}
 	
 	public static String[] get_Product_Location(){
-		return MySQL.Get_Database("READ", "Products", "product_Location");
+		MySQL.accessBD("READ", "SELECT `product_Location` FROM Products", "product_Location");
+		return MySQL.Transfer_Data();
 	}
 	
 	public static String[] get_Product_Stock(){
-		return MySQL.Get_Database("READ", "Products", "inv_Quantity");
+		MySQL.accessBD("READ", "SELECT `inv_Quantity` FROM Products", "inv_Quantity");
+		return MySQL.Transfer_Data();
 	}
 	
 	public static String[] get_Product_Porous(){
-		String[] Readable = MySQL.Get_Database("READ", "Products", "porousware");
+		MySQL.accessBD("READ", "SELECT `inv_Quantity` FROM Products", "inv_Quantity");
+		String[] Readable = MySQL.Transfer_Data();
 		for (int i=0; i<MySQL.get_DataSize(); i++){
 			if (Integer.parseInt(Readable[i]) == 1){
 				Readable [i] = "YES";
@@ -29,8 +35,7 @@ public class Product {
 		return Readable;
 	}
 	
-	public static void Update_Stock(String addStock, int addQuantity){
-		MySQL.accessBD("Add", "products", "inv_Quantity", "product_ID", addStock, "", "", addQuantity);
-		
+	public static void Update_Stock(int addStock, int addQuantity){
+		MySQL.accessBD("Add", "UPDATE products SET inv_Quantity=inv_Quantity+"+ addQuantity + " WHERE product_ID = " + addStock, "");
 	}
 }

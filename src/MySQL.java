@@ -16,7 +16,7 @@ public class MySQL {
 	final static String PASS = "Netbuilder12";
 	
 	
-	public static void accessBD(String task, String table, String field, String field2, String field3, String field4, String table2, int id){
+	public static void accessBD(String task, String query1, String back){
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -28,66 +28,39 @@ public class MySQL {
 			data.clear();
 			data2.clear();
 			stmt = conn.createStatement();
-			if ((task != "") & (table != "") & (field != "")){
+			if ((task != "")){
 				switch(task){
 				case "READ":
 					//Read
-					//System.out.println("Creating read statement...");
-					String sql1 = "SELECT " + field + " FROM " + table;
-					ResultSet rs = stmt.executeQuery(sql1);
+
+
+					ResultSet rs = stmt.executeQuery(query1);
 					while (rs.next()) {
-						String details = rs.getString(field);
+						String details = rs.getString(back);
 						data.add(details);
 					}
 					rs.close();
 					break;
 				case "Search":
 					//Search for other fields
-					//System.out.println("Creating search statement...");
-					String sql2 = "SELECT " + field + " FROM " + table + " WHERE " + field2 + "=" + id;
-					ResultSet rs2 = stmt.executeQuery(sql2);
+					ResultSet rs2 = stmt.executeQuery(query1);
 					while (rs2.next()){
-						String details = rs2.getString(field);
+						String details = rs2.getString(back);
 						data.add(details);
 					}
 					rs2.close();
 					break;
-				case "Refine":
-					//System.out.println("Creating refine statement...");
-					String sql3 = "SELECT " + field + " FROM " + table + " WHERE " + field2 + "=" + id;
-					ResultSet rs3 = stmt.executeQuery(sql3);
-				
-					while(rs3.next()){
-						String details = rs3.getString(field);
-						data.add(details);
-
-					}
-					rs3.close();
-					
-					if (data.size() !=0){
-						String[] transfer = new String[data.size()];
-						ResultSet rs3_1 = null;
-						for (int i = 0; i < data.size(); i++){
-							transfer[i] = data.get(i);
-							String sql3_1 = "SELECT " + field3 + " FROM " + table2 + " WHERE " + field4 + "=" + transfer[i];
-							rs3_1 = stmt.executeQuery(sql3_1);
-							while(rs3_1.next()){
-								String details2 = rs3_1.getString(field3);
-								data2.add(details2);
-							}
-						}
-						rs3_1.close();	
-					}
-					break;
 				case "Update":
-					String sql4 = "UPDATE " + table + " SET " + field2 + "=" + field + " WHERE " +  field3 + "=" + id;
-					stmt.execute(sql4);
-
-					break;
 				case "Add":
-					String sql5 = "UPDATE " + table + " SET " + field + " = " + field + " + " + id + " WHERE " + field2 + "=" + Integer.parseInt(field3); 
-					stmt.execute(sql5);
-					
+					stmt.execute(query1);
+					break;
+				case "Refine":
+					ResultSet rst = stmt.executeQuery(query1);
+					while(rst.next()){
+						String details = rst.getString(back);
+						data.add(details);
+					}
+					rst.close();
 					break;
 				default:
 					System.out.println("No operation... Invalid input");
@@ -109,10 +82,6 @@ public class MySQL {
 		}
 		//System.out.println("Goodbye!");
 	}
-	public static void main(String[]args){
-		accessBD("","","","","","","", 0);
-		
-	}
 	
 	public static int get_DataSize(){
 		return data.size();
@@ -120,18 +89,14 @@ public class MySQL {
 
 	
 	public static void Update_Status(int orderID, String toWhat){
-		accessBD("Update","`productdb`.`order`",toWhat,"`status`","`order_ID`","","",orderID);
-	}
+		accessBD("Update", "UPDATE `productdb`.`order` SET `status` = "+ toWhat +" WHERE `order_ID` = " + orderID, "");
+	}	
 	
-	public static String[] Get_Database(String task, String table, String field){
-		accessBD(task,table,field, "","","","", 0);
-
+	public static String[] Transfer_Data(){
 		String[] transfer = new String[data.size()];
-		
 		for (int i = 0; i < data.size(); i++){
 			transfer[i] = data.get(i);
 		}
-		
 		return transfer;
 	}
 	
