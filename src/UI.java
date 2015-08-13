@@ -142,6 +142,7 @@ public class UI{ // extends JFrame{
 						break;
 					case "PICKING":
 						MySQL.Update_Status(watch_int, "'DONE'");
+						RemovePurchaseOrdertoProducts(watch_int2);
 						break;
 					case "DONE":
 						System.out.println("Error you cannot update any further");
@@ -188,7 +189,9 @@ public class UI{ // extends JFrame{
 			public void mouseClicked(MouseEvent arg0) {
 				int row = ordersTable.getSelectedRow();
 				watch_int = Integer.parseInt((String) ordersTable.getModel().getValueAt(row, 0));
+				watch_int2 = watch_int;
 				orderStatus= (String) ordersTable.getModel().getValueAt(row,1);
+				
 				if (orderStatus.equals("DONE")){
 					UpdateStatusButton.setVisible(false);
 				}
@@ -624,10 +627,22 @@ public class UI{ // extends JFrame{
 	private void AddPurchaseOrdertoProducts(int order){
 		String[] product_ID = PurchaseOrder.get_PurchaseOrder_Product_ID(order);
 		String[] product_Quantity = PurchaseOrder.get_PurchaseOrder_Product_Quantity(order);
+		int all = MySQL.get_DataSize();
 		
-		for(int i = 0; i<MySQL.get_DataSize(); i++){
+		for(int i = 0; i<all; i++){
 			Product.Update_Stock(Integer.parseInt(product_ID[i]), Integer.parseInt(product_Quantity[i]));
 		}
 	}
+	
+	private void RemovePurchaseOrdertoProducts(int order){
+		String[] product_ID = Order.get_Order_ProductID(order);
+		String[] product_Quantity = Order.get_Order_Product_quantity(order);
+		int all = MySQL.get_DataSize();
+		
+		for(int i = 0; i<all; i++){
+			Product.Update_Stock(Integer.parseInt(product_ID[i]),  Integer.parseInt("-" + product_Quantity[i]));
+		}
+	}
 }
+
 
